@@ -27,24 +27,43 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/',
 function(req, res) {
-  res.render('index');
+  if (req.session.username){
+    res.render('index');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.get('/create',
 function(req, res) {
-  res.render('index');
+  if (req.session.username){
+    res.render('index');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 
 app.get('/links',
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.send(200, links.models);
-  });
+  if (req.session.username){
+    Links.reset().fetch().then(function(links) {
+      res.send(200, links.models);
+    });
+  } else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/logout',
+function(req,res){
+  req.session.destroy();
+  res.redirect('/')
 });
 
 app.post('/links',
 function(req, res) {
+
   var uri = req.body.url;
 
   if (!util.isValidUrl(uri)) {
@@ -95,6 +114,7 @@ app.post('/signup', function(req, res){
   });
   user.save()
     .then(function(){
+      req.session.username = true;
       res.redirect('/');
     })
     .catch(function(){
@@ -107,10 +127,18 @@ app.get('/login', function(req, res){
 });
 
 app.post('/login', function(req, res){
+
   var username = req.body.username;
   var password = req.body.password;
 
-  //
+  User.authenticateUser(username, password, function(authenticated){
+    if (authenticated){
+      req.session.username = true;
+      res.redirect('/');
+    } else {
+      res.redirect('/login');
+    }
+  });
 });
 
 

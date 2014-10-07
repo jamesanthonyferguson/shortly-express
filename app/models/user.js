@@ -21,6 +21,26 @@ var User = db.Model.extend({
 
 });
 
+User.authenticateUser = function(username, password, cb){
+  new User({username: username}).fetch({require: true})
+    .then(function(user){
+      console.log(user);
+      var salt = user.get('password_salt');
+      console.log(salt, 'pass salt');
+      var expectedHash = user.get('password_hash');
+      console.log(expectedHash, 'expected hashh');
+      var passHash = bcrypt.hashSync(password, salt);
+      console.log(passHash, 'the real hash');
+      if (expectedHash === passHash){
+        cb(true);
+      } else {
+        cb(false);
+      }
+    }).catch(function(){
+      cb(false);
+    });
+};
+
 
 module.exports = User;
 

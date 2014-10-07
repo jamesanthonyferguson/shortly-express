@@ -9,7 +9,8 @@ var User = require('./app/models/user');
 var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
-
+var cookieParser = require('cookie-parser');
+var session = require('express-session')
 var app = express();
 
 app.set('views', __dirname + '/views');
@@ -17,6 +18,8 @@ app.set('view engine', 'ejs');
 app.use(partials());
 // Parse JSON (uniform resource locators)
 app.use(bodyParser.json());
+app.use(cookieParser('hunterToo'));
+app.use(session());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
@@ -99,12 +102,17 @@ app.post('/signup', function(req, res){
     });
 });
 
+app.get('/login', function(req, res){
+  res.render('login');
+});
 
-// setTimeout(function(){user.save().then(function(){
-//   console.log("And we're not caught")})
-//   .catch(function(err) {
-//   console.log("hit the catch" + err);
-// })},10);
+app.post('/login', function(req, res){
+  var username = req.body.username;
+  var password = req.body.password;
+
+  //
+});
+
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail

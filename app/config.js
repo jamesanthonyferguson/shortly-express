@@ -56,6 +56,20 @@ db.knex.schema.hasTable('users').then(function(exists){
   }
 });
 
+db.knex.schema.hasTable('sessions').then(function(exists){
+  if (!exists) {
+    db.knex.schema.createTable('sessions', function (user){
+      user.increments('id').primary();
+      user.integer('user_id').inTable('users').references('id');
+      user.string('token', 255);
+      user.integer('expires_at', Date.now()+100000000)
+      user.timestamps();
+    }).then(function (table) {
+      console.log('Created Table', table);
+    });
+  }
+});
+
 /************************************************************/
 // Add additional schema definitions below
 /************************************************************/

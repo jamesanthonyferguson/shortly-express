@@ -3,7 +3,6 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 
-
 var db = require('./app/config');
 var Users = require('./app/collections/users');
 var User = require('./app/models/user');
@@ -32,6 +31,7 @@ app.get('/create',
 function(req, res) {
   res.render('index');
 });
+
 
 app.get('/links',
 function(req, res) {
@@ -77,12 +77,28 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-var user = new User({
-  username: 'Pal',
-  password: 'cooltshirtsbro'
+
+app.get('/signup',
+function(req,res){
+  res.render('signup');
 });
 
-user.save();
+app.post('/signup', function(req, res){
+  var username = req.body.username;
+  var password = req.body.password;
+  var user = new User({
+    username: username,
+    password: password
+  });
+  user.save()
+    .then(function(){
+      res.redirect('/');
+    })
+    .catch(function(){
+      res.send(404);
+    });
+});
+
 
 // setTimeout(function(){user.save().then(function(){
 //   console.log("And we're not caught")})

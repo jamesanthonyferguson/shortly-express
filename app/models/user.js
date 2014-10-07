@@ -15,6 +15,7 @@ var User = db.Model.extend({
       model.set('password_salt', salt);
       var passHash = bcrypt.hashSync(model.get('password'), salt);
       model.set('password_hash', passHash);
+      model.unset('password');
     });
   }
 
